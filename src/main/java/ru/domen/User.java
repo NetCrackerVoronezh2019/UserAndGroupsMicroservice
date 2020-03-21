@@ -25,6 +25,10 @@ public class User {
     private Date birthday;
     @ManyToMany(mappedBy = "users")
     private List<Group> groups = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER,
+            mappedBy = "creator")
+    private List<Group> submitGroups = new ArrayList<>();
 
     public long getUserId() {
         return userId;
@@ -84,5 +88,13 @@ public class User {
 
     public void setGroups(List<Group> groups) {
         this.groups = groups;
+    }
+
+    public List<Group> getSubmitGroups() {
+        return submitGroups;
+    }
+
+    public void setSubmitGroups(List<Group> submitGroups) {
+        this.submitGroups = submitGroups;
     }
 }

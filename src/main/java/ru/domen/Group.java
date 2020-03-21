@@ -20,6 +20,9 @@ public class Group {
                 joinColumns = @JoinColumn(name = "groupId"),
                 inverseJoinColumns = @JoinColumn(name = "userId"))
     private List<User> users = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "userId")
+    private User creator;
 
     public Long getGroupId() {
         return groupId;
@@ -51,5 +54,17 @@ public class Group {
 
     public void setUsers(List<User> users) {
         this.users = users;
+    }
+
+    public User getCreator() {
+        return creator;
+    }
+
+    public void setCreator(User creator) {
+        this.creator = creator;
+    }
+
+    public void addUser(User user) {
+        users.add(user);
     }
 }

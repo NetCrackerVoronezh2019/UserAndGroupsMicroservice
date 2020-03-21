@@ -6,12 +6,14 @@ public class GroupDTO {
     private Long groupId;
     private String name;
     private Long dialogId;
+    private Long creatorId;
 
     public static GroupDTO getGrupDTO(Group group) {
         GroupDTO newDTO = new GroupDTO();
         newDTO.dialogId = group.getDialogId();
         newDTO.groupId = group.getGroupId();
         newDTO.name = group.getName();
+        newDTO.creatorId = group.getCreator().getUserId();
         return newDTO;
     }
 
