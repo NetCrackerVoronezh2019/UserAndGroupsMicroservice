@@ -30,6 +30,35 @@ public class User {
             mappedBy = "creator")
     private List<Group> submitGroups = new ArrayList<>();
 
+    @ManyToMany
+    @JoinTable(name = "user_frendship",
+            joinColumns = @JoinColumn(name = "user"),
+            inverseJoinColumns = @JoinColumn(name = "friend"))
+    private List<User> outgoing = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(name = "user_frendship",
+            joinColumns = @JoinColumn(name = "friend"),
+            inverseJoinColumns = @JoinColumn(name = "user"))
+    private List<User> ingoing = new ArrayList<>();
+
+
+    public List<User> getOutgoing() {
+        return outgoing;
+    }
+
+    public void setOutgoing(List<User> outgoing) {
+        this.outgoing = outgoing;
+    }
+
+    public List<User> getIngoing() {
+        return ingoing;
+    }
+
+    public void setIngoing(List<User> ingoing) {
+        this.ingoing = ingoing;
+    }
+
     public long getUserId() {
         return userId;
     }

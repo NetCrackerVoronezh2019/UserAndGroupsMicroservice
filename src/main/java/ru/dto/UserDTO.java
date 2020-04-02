@@ -14,6 +14,7 @@ public class UserDTO {
 
     public static UserDTO getUserDTO(User user){
         UserDTO newDTO = new UserDTO();
+        newDTO.userId = user.getUserId();
         newDTO.birthday = user.getBirthday();
         newDTO.email = user.getEmail();
         newDTO.firstName = user.getFirstName();

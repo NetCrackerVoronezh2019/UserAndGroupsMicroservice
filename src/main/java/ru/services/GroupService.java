@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import ru.domen.Group;
 import ru.repos.GroupRepository;
 
+import java.util.List;
+
 @Service
 public class GroupService {
     @Autowired
@@ -20,6 +22,10 @@ public class GroupService {
 
     public void deleteGroup(Long id) {
         groupRepository.deleteById(id);
+    }
+
+    public List<Group> search(String name) {
+        return groupRepository.fiendByName(name);
     }
 
 }
