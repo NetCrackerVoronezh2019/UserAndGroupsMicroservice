@@ -23,25 +23,67 @@ public class User {
     @Column(name="birthday")
     @Temporal(TemporalType.TIMESTAMP)
     private Date birthday;
+    @Column(name = "imageURL")
+    private String imageURL;
     @ManyToMany(mappedBy = "users")
     private List<Group> groups = new ArrayList<>();
+    @ManyToMany(mappedBy = "admins")
+    private List<Group> groupsAdmining = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER,
+            fetch = FetchType.LAZY,
             mappedBy = "creator")
     private List<Group> submitGroups = new ArrayList<>();
-
     @ManyToMany
-    @JoinTable(name = "user_frendship",
-            joinColumns = @JoinColumn(name = "user"),
-            inverseJoinColumns = @JoinColumn(name = "friend"))
+    @JoinTable(name = "user_friends",
+            joinColumns = { @JoinColumn(name = "user_id") },
+            inverseJoinColumns = { @JoinColumn(name = "friend") })
     private List<User> outgoing = new ArrayList<>();
 
     @ManyToMany
-    @JoinTable(name = "user_frendship",
-            joinColumns = @JoinColumn(name = "friend"),
-            inverseJoinColumns = @JoinColumn(name = "user"))
+    @JoinTable(name = "user_friends",
+            joinColumns ={ @JoinColumn(name = "friend") },
+            inverseJoinColumns = {@JoinColumn(name = "user_id") })
     private List<User> ingoing = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            mappedBy = "sender")
+    private List<Comment> comments = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "roleId")
+    private Role role;
+
+    public List<Group> getGroupsAdmining() {
+        return groupsAdmining;
+    }
+
+    public void setGroupsAdmining(List<Group> groupsAdmining) {
+        this.groupsAdmining = groupsAdmining;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
 
     public List<User> getOutgoing() {
         return outgoing;
@@ -61,10 +103,6 @@ public class User {
 
     public long getUserId() {
         return userId;
-    }
-
-    public void setUserId(long userId) {
-        this.userId = userId;
     }
 
     public String getEmail() {

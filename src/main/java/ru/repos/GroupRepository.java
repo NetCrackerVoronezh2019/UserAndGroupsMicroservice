@@ -11,11 +11,10 @@ import java.util.List;
 
 @Repository
 @Transactional
-
 public interface GroupRepository extends CrudRepository<Group,Long> {
     @Override
     @Modifying
     public void deleteById(Long aLong);
     @Query("SELECT g from Group g WHERE g.name Like %:name%")
-    public List<Group> fiendByName(String name);
+    public List<Group> findByName(String name);
 }

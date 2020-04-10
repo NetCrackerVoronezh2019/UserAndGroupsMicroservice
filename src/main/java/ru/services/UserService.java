@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import ru.domen.User;
 import ru.repos.UserRepository;
 
+import java.util.List;
+
 @Service
 public class UserService {
     @Autowired
@@ -17,4 +19,17 @@ public class UserService {
     public User getUserById(Long id) {
         return userRepository.findById(id).get();
     }
+
+    public List<User> getFriends(Long userId) {
+        return userRepository.fiendUserFriends(userId);
+    }
+
+    public List<User> getOutgoingFriends(Long userId) {
+        return userRepository.fiendOutgoing(userId);
+    }
+
+    public List<User> getIngoingFriends(Long userId) {
+        return userRepository.fiendIngoing(userId);
+    }
+
 }

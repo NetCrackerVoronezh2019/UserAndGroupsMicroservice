@@ -25,7 +25,7 @@ public class GroupService {
     }
 
     public List<Group> search(String name) {
-        return groupRepository.fiendByName(name);
+        return groupRepository.findByName(name);
     }
 
 }

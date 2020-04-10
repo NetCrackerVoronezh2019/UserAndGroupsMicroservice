@@ -11,16 +11,36 @@ public class UserDTO {
     private String middleName;
     private String lastName;
     private Date birthday;
+    private String role;
+    private String imageURL;
 
     public static UserDTO getUserDTO(User user){
-        UserDTO newDTO = new UserDTO();
-        newDTO.userId = user.getUserId();
-        newDTO.birthday = user.getBirthday();
-        newDTO.email = user.getEmail();
-        newDTO.firstName = user.getFirstName();
-        newDTO.middleName = user.getMiddleName();
-        newDTO.lastName = user.getLastName();
-        return newDTO;
+        UserDTO userDTO = new UserDTO();
+        userDTO.userId = user.getUserId();
+        userDTO.birthday = user.getBirthday();
+        userDTO.email = user.getEmail();
+        userDTO.firstName = user.getFirstName();
+        userDTO.middleName = user.getMiddleName();
+        userDTO.lastName = user.getLastName();
+        userDTO.role = user.getRole().getRoleName();
+        userDTO.imageURL = user.getImageURL();
+        return userDTO;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public Long getUserId() {

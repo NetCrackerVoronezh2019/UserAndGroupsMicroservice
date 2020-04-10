@@ -10,14 +10,45 @@ public class GroupDTO {
     private String name;
     private Long dialogId;
     private Long creatorId;
+    private String Subject;
+    private String imageURL;
+    private String description;
 
     public static GroupDTO getGroupDTO(Group group) {
-        GroupDTO newDTO = new GroupDTO();
-        newDTO.dialogId = group.getDialogId();
-        newDTO.groupId = group.getGroupId();
-        newDTO.name = group.getName();
-        newDTO.creatorId = group.getCreator().getUserId();
-        return newDTO;
+        GroupDTO groupDTO = new GroupDTO();
+        groupDTO.dialogId = group.getDialogId();
+        groupDTO.groupId = group.getGroupId();
+        groupDTO.name = group.getName();
+        groupDTO.creatorId = group.getCreator().getUserId();
+        groupDTO.imageURL = group.getImageURL();
+        groupDTO.Subject = group.getSubject().getName();
+        groupDTO.description = group.getDescription();
+        return groupDTO;
+    }
+
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getSubject() {
+        return Subject;
+    }
+
+    public void setSubject(String subject) {
+        Subject = subject;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 
     public static List<GroupDTO> getGroupDTO(List<Group> groups) {

@@ -13,6 +13,7 @@ import ru.domen.User;
 import ru.dto.GroupDTO;
 import ru.dto.UserDTO;
 import ru.services.GroupService;
+import ru.services.SubjectService;
 import ru.services.UserService;
 
 import java.util.ArrayList;
@@ -27,13 +28,25 @@ public class GroupsController {
     private UserService userService;
     @Autowired
     private GroupService groupService;
+    @Autowired
+    private SubjectService subjectService;
+
+    @PutMapping("/groupSettings")
+    public void groupSettings(@RequestBody GroupDTO groupDTO) {
+        Group group = groupService.getGroupById(groupDTO.getGroupId());
+        group.setName(groupDTO.getName());
+        group.setSubject(subjectService.getSubjectByName(groupDTO.getSubject()));
+        groupService.saveGroup(group);
+    }
 
     @PostMapping("/createGroup/")
-    public void createGroup(@RequestParam Long creatorId, @RequestParam String groupName) {
+    public void createGroup(@RequestParam Long creatorId, @RequestParam String groupName, @RequestParam String subjectName) {
         Group newGroup = new Group();
+        newGroup.setSubject(subjectService.getSubjectByName(subjectName));
         newGroup.setName(groupName);
         newGroup.setCreator(userService.getUserById(creatorId));
         newGroup.getUsers().add(newGroup.getCreator());
+        newGroup.getAdmins().add(newGroup.getCreator());
         RestTemplate restTemplate = new RestTemplate();
         UriComponentsBuilder uriBuilder =UriComponentsBuilder.fromHttpUrl("http://localhost:8088/group/createDialog").queryParam("creatorId",creatorId).queryParam("name",groupName);
         ResponseEntity<Long> res = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.POST, null, new ParameterizedTypeReference<Long>() {});
@@ -72,7 +85,7 @@ public class GroupsController {
         groupService.saveGroup(group);
         RestTemplate restTemplate = new RestTemplate();
         UriComponentsBuilder uriBuilder =UriComponentsBuilder.fromHttpUrl("http://localhost:8088/group/leaveDialog/").queryParam("userId",userId).queryParam("dialogId",group.getDialogId());
-        restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.DELETE, null, Object.class);
+        restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.DELETE   , null, Object.class);
     }
 
     @DeleteMapping("/deleteGroup")
@@ -90,5 +103,31 @@ public class GroupsController {
     public List<GroupDTO> getUserGroups(@RequestParam Long userId) {
         List<Group> groups = userService.getUserById(userId).getGroups();
         return GroupDTO.getGroupDTO(groups);
+    }
+
+    @GetMapping("groups/admins")
+    public List<UserDTO> getGroupAdmins(@RequestParam Long groupId) {
+        List<User> admins = groupService.getGroupById(groupId).getAdmins();
+        List<UserDTO> adminsDTO = new ArrayList<>();
+        for (User user :
+                admins) {
+            adminsDTO.add(UserDTO.getUserDTO(user));
+        }
+        return adminsDTO;
+    }
+
+    @PutMapping("groups/makeAdmin")
+    public void makeAdmin(@RequestParam Long groupId,@RequestParam Long userId) {
+        Group group = groupService.getGroupById(groupId);
+        group.getAdmins().add(userService.getUserById(userId));
+        groupService.saveGroup(group);
+    }
+
+
+    @PutMapping("groups/deleteAdmin")
+    public void deleteAdmin(@RequestParam Long groupId,@RequestParam Long userId) {
+        Group group = groupService.getGroupById(groupId);
+        group.setAdmins(group.getAdmins().stream().filter(user -> user.getUserId()!=userId).collect(Collectors.toList()));
+        groupService.saveGroup(group);
     }
 }

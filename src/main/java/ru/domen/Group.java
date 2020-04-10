@@ -20,9 +20,68 @@ public class Group {
                 joinColumns = @JoinColumn(name = "groupId"),
                 inverseJoinColumns = @JoinColumn(name = "userId"))
     private List<User> users = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(name = "Admins_groups",
+            joinColumns = @JoinColumn(name = "groupId"),
+            inverseJoinColumns = @JoinColumn(name = "userId"))
+    private List<User> admins = new ArrayList<>();
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userId")
     private User creator;
+    @Column(name = "imageURL")
+    private String imageURL;
+    @Column(name = "description")
+    private String description;
+
+    public List<User> getAdmins() {
+        return admins;
+    }
+
+    public void setAdmins(List<User> admins) {
+        this.admins = admins;
+    }
+
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER,
+            mappedBy = "group")
+    private List<Post> posts = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "subjectId")
+    private Subject subject;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
+
+    public List<Post> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
+    }
+
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
 
     public Long getGroupId() {
         return groupId;
