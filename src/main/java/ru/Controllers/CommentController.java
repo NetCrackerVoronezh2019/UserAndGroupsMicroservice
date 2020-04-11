@@ -8,7 +8,9 @@ import ru.services.CommentService;
 import ru.services.PostService;
 import ru.services.UserService;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:9080")
@@ -37,9 +39,20 @@ public class CommentController {
         commentService.saveComment(comment);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/deleteComment")
     public void deleteComment(@RequestParam Long commentId) {
         commentService.deleteComment(commentService.getCommentById(commentId));
+    }
+
+    @GetMapping("/getComments")
+    public List<CommentDTO> getComments(@RequestParam Long postId) {
+        List<Comment> comments = postService.getById(postId).getComments();
+        List<CommentDTO> commentDTOS = new ArrayList<>();
+        for (Comment comment :
+                comments) {
+            commentDTOS.add(CommentDTO.getCommentDTO(comment));
+        }
+        return commentDTOS;
     }
 
 }

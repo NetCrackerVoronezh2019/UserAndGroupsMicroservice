@@ -31,11 +31,11 @@ public class PostController {
         post.setGroup(groupService.getGroupById(postDTO.getGroupId()));
         post.setText(postDTO.getText());
         postService.savePost(post);
-        for (PostImageDTO image :
+        for (String image :
                 postDTO.getImages()) {
             PostImage postImage = new PostImage();
             postImage.setPost(post);
-            postImage.setImageURL(image.getImageURL());
+            postImage.setImageURL(image);
             postImageService.savePostImage(postImage);
         }
     }
@@ -49,11 +49,11 @@ public class PostController {
             postImageService.deletePostImage(postImage);
         }
         post.setImages(new ArrayList<>());
-        for (PostImageDTO image :
+        for (String image :
                 postDTO.getImages()) {
             PostImage postImage = new PostImage();
             postImage.setPost(post);
-            postImage.setImageURL(image.getImageURL());
+            postImage.setImageURL(image);
             postImageService.savePostImage(postImage);
         }
     }
@@ -66,5 +66,16 @@ public class PostController {
             postImageService.deletePostImage(postImage);
         }
         postService.deletePost(post);
+    }
+
+    @GetMapping("groups/getPosts")
+    public List<PostDTO> getGroupPosts(@RequestParam Long groupId) {
+        List<Post> posts = groupService.getGroupById(groupId).getPosts();
+        List<PostDTO> postDTOS = new ArrayList<>();
+        for (Post post :
+                posts) {
+            postDTOS.add(PostDTO.getPostDTO(post));
+        }
+        return postDTOS;
     }
 }

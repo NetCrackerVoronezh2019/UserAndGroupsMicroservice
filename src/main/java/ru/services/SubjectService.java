@@ -5,13 +5,15 @@ import org.springframework.stereotype.Service;
 import ru.domen.Subject;
 import ru.repos.SubjectRepository;
 
+import java.util.List;
+
 @Service
 public class SubjectService {
     @Autowired
     private SubjectRepository subjectRepository;
 
-    public Subject getSubjectByName(String name) {
-        return subjectRepository.findByName(name);
+    public Subject getSubjectByTranslateName(String name) {
+        return subjectRepository.findByTranslateName(name);
     }
 
     public Subject saveSubject(Subject subject) {
@@ -20,5 +22,9 @@ public class SubjectService {
 
     public void deleteSubject(Subject subject) {
         subjectRepository.delete(subject);
+    }
+
+    public List<Subject> getAllSubjects() {
+        return subjectRepository.findAllSubjects();
     }
 }

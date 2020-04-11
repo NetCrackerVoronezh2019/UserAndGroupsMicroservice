@@ -13,9 +13,8 @@ public class PostDTO {
     private Long postId;
     private String text;
     private Date date;
-    private List<PostImageDTO> images = new ArrayList<>();
+    private List<String> images = new ArrayList<>();
     private Long groupId;
-    private List<CommentDTO> comments = new ArrayList<>();
 
     public static PostDTO getPostDTO(Post post) {
         PostDTO postDTO = new PostDTO();
@@ -25,11 +24,7 @@ public class PostDTO {
         postDTO.groupId = post.getGroup().getGroupId();
         for (PostImage postImage :
                 post.getImages()) {
-            postDTO.images.add(PostImageDTO.getPostImage(postImage));
-        }
-        for (Comment comment :
-                post.getComments()) {
-            postDTO.comments.add(CommentDTO.getCommentDTO(comment));
+            postDTO.images.add(postImage.getImageURL());
         }
         return postDTO;
     }
@@ -58,11 +53,11 @@ public class PostDTO {
         this.date = date;
     }
 
-    public List<PostImageDTO> getImages() {
+    public List<String> getImages() {
         return images;
     }
 
-    public void setImages(List<PostImageDTO> images) {
+    public void setImages(List<String> images) {
         this.images = images;
     }
 
@@ -74,11 +69,4 @@ public class PostDTO {
         this.groupId = groupId;
     }
 
-    public List<CommentDTO> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<CommentDTO> comments) {
-        this.comments = comments;
-    }
 }

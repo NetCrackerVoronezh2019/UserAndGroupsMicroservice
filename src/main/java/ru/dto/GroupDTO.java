@@ -10,7 +10,7 @@ public class GroupDTO {
     private String name;
     private Long dialogId;
     private Long creatorId;
-    private String Subject;
+    private String subjectName;
     private String imageURL;
     private String description;
 
@@ -21,7 +21,7 @@ public class GroupDTO {
         groupDTO.name = group.getName();
         groupDTO.creatorId = group.getCreator().getUserId();
         groupDTO.imageURL = group.getImageURL();
-        groupDTO.Subject = group.getSubject().getName();
+        groupDTO.subjectName = group.getSubject().getName();
         groupDTO.description = group.getDescription();
         return groupDTO;
     }
@@ -35,12 +35,12 @@ public class GroupDTO {
         this.description = description;
     }
 
-    public String getSubject() {
-        return Subject;
+    public String getSubjectName() {
+        return subjectName;
     }
 
-    public void setSubject(String subject) {
-        Subject = subject;
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
     }
 
     public String getImageURL() {

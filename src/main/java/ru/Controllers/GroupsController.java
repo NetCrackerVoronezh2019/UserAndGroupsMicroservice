@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.domen.Group;
+import ru.domen.Subject;
 import ru.domen.User;
 import ru.dto.GroupDTO;
 import ru.dto.UserDTO;
@@ -35,14 +36,14 @@ public class GroupsController {
     public void groupSettings(@RequestBody GroupDTO groupDTO) {
         Group group = groupService.getGroupById(groupDTO.getGroupId());
         group.setName(groupDTO.getName());
-        group.setSubject(subjectService.getSubjectByName(groupDTO.getSubject()));
+        group.setSubject(subjectService.getSubjectByTranslateName(groupDTO.getSubjectName()));
         groupService.saveGroup(group);
     }
 
     @PostMapping("/createGroup/")
     public void createGroup(@RequestParam Long creatorId, @RequestParam String groupName, @RequestParam String subjectName) {
         Group newGroup = new Group();
-        newGroup.setSubject(subjectService.getSubjectByName(subjectName));
+        newGroup.setSubject(subjectService.getSubjectByTranslateName(subjectName));
         newGroup.setName(groupName);
         newGroup.setCreator(userService.getUserById(creatorId));
         newGroup.getUsers().add(newGroup.getCreator());
@@ -94,8 +95,11 @@ public class GroupsController {
     }
 
     @GetMapping("group/search")
-    public List<GroupDTO> search(@RequestParam String name) {
+    public List<GroupDTO> search(@RequestParam String name, @RequestParam String subjectName) {
         List<Group> groups = groupService.search(name);
+        if (subjectName != "") {
+            groups = groups.stream().filter(group -> group.getSubject().getTranslateName().equals(subjectName)).collect(Collectors.toList());
+        }
         return GroupDTO.getGroupDTO(groups);
     }
 
