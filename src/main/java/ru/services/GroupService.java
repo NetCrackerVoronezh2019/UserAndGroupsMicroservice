@@ -3,6 +3,7 @@ package ru.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.domen.Group;
+import ru.domen.User;
 import ru.repos.GroupRepository;
 
 import java.util.List;

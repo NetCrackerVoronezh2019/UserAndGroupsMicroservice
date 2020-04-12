@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import ru.domen.Group;
+import ru.domen.User;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -17,4 +18,5 @@ public interface GroupRepository extends CrudRepository<Group,Long> {
     public void deleteById(Long aLong);
     @Query("SELECT g from Group g WHERE g.name Like %:name%")
     public List<Group> findByName(String name);
+
 }

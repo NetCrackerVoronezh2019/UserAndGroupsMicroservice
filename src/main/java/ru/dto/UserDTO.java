@@ -2,7 +2,9 @@ package ru.dto;
 
 import ru.domen.User;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class UserDTO {
     private Long userId;
@@ -25,6 +27,15 @@ public class UserDTO {
         userDTO.role = user.getRole().getRoleName();
         userDTO.imageURL = user.getImageURL();
         return userDTO;
+    }
+
+    public static List<UserDTO> getUserDTO(List<User> users) {
+        List<UserDTO> userDTOS = new ArrayList<>();
+        for (User user :
+                users) {
+            userDTOS.add(UserDTO.getUserDTO(user));
+        }
+        return userDTOS;
     }
 
     public String getImageURL() {
