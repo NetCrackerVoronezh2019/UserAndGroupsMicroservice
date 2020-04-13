@@ -2,17 +2,21 @@ package ru.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.domen.Comment;
 import ru.domen.Post;
 import ru.domen.PostImage;
 import ru.dto.PostDTO;
 import ru.dto.PostImageDTO;
+import ru.services.CommentService;
 import ru.services.GroupService;
 import ru.services.PostImageService;
 import ru.services.PostService;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:9080")
@@ -23,6 +27,8 @@ public class PostController {
     private PostService postService;
     @Autowired
     private PostImageService postImageService;
+    @Autowired
+    private CommentService commentService;
 
     @PostMapping("groups/makePost")
     public void makePost(@RequestBody PostDTO postDTO) {
@@ -56,21 +62,18 @@ public class PostController {
             postImage.setImageURL(image);
             postImageService.savePostImage(postImage);
         }
+        postService.savePost(post);
     }
 
     @DeleteMapping("/deletePost")
     public void deletePost(@RequestParam Long postId) {
         Post post = postService.getById(postId);
-        for (PostImage postImage :
-                post.getImages()) {
-            postImageService.deletePostImage(postImage);
-        }
         postService.deletePost(post);
     }
 
     @GetMapping("groups/getPosts")
     public List<PostDTO> getGroupPosts(@RequestParam Long groupId) {
-        List<Post> posts = groupService.getGroupById(groupId).getPosts();
+        List<Post> posts = groupService.getGroupById(groupId).getPosts().stream().sorted(Comparator.comparing(Post::getDate).reversed()).collect(Collectors.toList());
         List<PostDTO> postDTOS = new ArrayList<>();
         for (Post post :
                 posts) {

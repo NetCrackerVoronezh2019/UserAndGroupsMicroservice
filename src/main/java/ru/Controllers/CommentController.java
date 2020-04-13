@@ -9,8 +9,10 @@ import ru.services.PostService;
 import ru.services.UserService;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:9080")
@@ -46,7 +48,7 @@ public class CommentController {
 
     @GetMapping("/getComments")
     public List<CommentDTO> getComments(@RequestParam Long postId) {
-        List<Comment> comments = postService.getById(postId).getComments();
+        List<Comment> comments = postService.getById(postId).getComments().stream().sorted(Comparator.comparing(Comment::getDate).reversed()).collect(Collectors.toList());
         List<CommentDTO> commentDTOS = new ArrayList<>();
         for (Comment comment :
                 comments) {

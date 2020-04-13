@@ -15,7 +15,7 @@ public class PostImageService {
     }
 
     public void deletePostImage(PostImage postImage) {
-        postImageRepository.delete(postImage);
+        postImageRepository.delete(postImage.getImageId());
     }
 
 }
