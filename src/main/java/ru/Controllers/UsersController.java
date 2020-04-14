@@ -14,6 +14,7 @@ import ru.services.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:9080")
@@ -66,11 +67,14 @@ public class UsersController {
 
     @GetMapping("/friends")
     public List<UserDTO> getFriends(@RequestParam Long userId) {
-        List<User> friends = userService.getFriends(userId);
+        User user = userService.getUserById(userId);
+        List<Long> outgoing = user.getOutgoing().stream().map(User::getUserId).collect(Collectors.toList());
         List<UserDTO> friendsDTO = new ArrayList<>();
-        for (User user :
-                friends) {
-            friendsDTO.add(UserDTO.getUserDTO(user));
+        for (User us :
+                user.getIngoing()) {
+            if (outgoing.contains(us.getUserId())) {
+                friendsDTO.add(UserDTO.getUserDTO(us));
+            }
         }
         return friendsDTO;
     }
@@ -78,22 +82,28 @@ public class UsersController {
 
     @GetMapping("/IngoingFriends")
     public List<UserDTO> getIngoingFriends(@RequestParam Long userId) {
-        List<User> friends = userService.getIngoingFriends(userId);
+        User user = userService.getUserById(userId);
+        List<Long> outgoing = user.getOutgoing().stream().map(User::getUserId).collect(Collectors.toList());
         List<UserDTO> friendsDTO = new ArrayList<>();
-        for (User user :
-                friends) {
-            friendsDTO.add(UserDTO.getUserDTO(user));
+        for (User us :
+                user.getIngoing()) {
+            if (!outgoing.contains(us.getUserId())) {
+                friendsDTO.add(UserDTO.getUserDTO(us));
+            }
         }
         return friendsDTO;
     }
 
     @GetMapping("/OutgoingFriends")
     public List<UserDTO> getOutgoingFriends(@RequestParam Long userId) {
-        List<User> friends = userService.getOutgoingFriends(userId);
+        User user = userService.getUserById(userId);
+        List<Long> ingoing = user.getIngoing().stream().map(User::getUserId).collect(Collectors.toList());
         List<UserDTO> friendsDTO = new ArrayList<>();
-        for (User user :
-                friends) {
-            friendsDTO.add(UserDTO.getUserDTO(user));
+        for (User us :
+                user.getOutgoing()) {
+            if (!ingoing.contains(us.getUserId())) {
+                friendsDTO.add(UserDTO.getUserDTO(us));
+            }
         }
         return friendsDTO;
     }
@@ -103,6 +113,18 @@ public class UsersController {
         User ingoing = userService.getUserById(ingoingId);
         ingoing.getIngoing().add(userService.getUserById(outgoingId));
         userService.saveUser(ingoing);
+    }
+
+    @PutMapping("/removeFriend")
+    public void removeFriend(@RequestParam Long ingoingId, @RequestParam Long outgoingId) {
+        User outgoing = userService.getUserById(outgoingId);
+        outgoing.setOutgoing(outgoing.getOutgoing().stream().filter(user -> user.getUserId()!=ingoingId).collect(Collectors.toList()));
+        userService.saveUser(outgoing);
+    }
+
+    @GetMapping("user/search")
+    public List<UserDTO> search(@RequestParam String firstName, @RequestParam String lastName) {
+        return UserDTO.getUserDTO(userService.search(firstName,lastName));
     }
 
 }

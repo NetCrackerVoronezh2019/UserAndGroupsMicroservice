@@ -20,16 +20,8 @@ public class UserService {
         return userRepository.findById(id).get();
     }
 
-    public List<User> getFriends(Long userId) {
-        return userRepository.fiendUserFriends(userId);
-    }
-
-    public List<User> getOutgoingFriends(Long userId) {
-        return userRepository.fiendOutgoing(userId);
-    }
-
-    public List<User> getIngoingFriends(Long userId) {
-        return userRepository.fiendIngoing(userId);
+    public List<User> search(String firstName, String lastName) {
+        return userRepository.search(firstName, lastName);
     }
 
 }
