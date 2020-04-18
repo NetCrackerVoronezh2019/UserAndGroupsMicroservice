@@ -7,10 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import ru.domen.FriendshipNotification;
 import ru.domen.Group;
 import ru.domen.User;
 import ru.dto.GroupDTO;
 import ru.dto.UserDTO;
+import ru.services.FriendshipNotificationService;
 import ru.services.RoleService;
 import ru.services.UserService;
 
@@ -25,6 +27,8 @@ public class UsersController {
     private UserService userService;
     @Autowired
     private RoleService roleService;
+    @Autowired
+    private FriendshipNotificationService friendshipNotificationService;
 
     @PostMapping("/createUser/")
     public void createUser(@RequestBody UserDTO userDTO) {
@@ -114,13 +118,21 @@ public class UsersController {
     @PutMapping("/addToFriends")
     public void addToFriends(@RequestParam Long ingoingId, @RequestParam Long outgoingId) {
         User ingoing = userService.getUserById(ingoingId);
-        ingoing.getIngoing().add(userService.getUserById(outgoingId));
+        User outgoing = userService.getUserById(outgoingId);
+        if (!ingoing.getOutgoing().stream().map(User::getUserId).collect(Collectors.toList()).contains(outgoingId)) {
+            FriendshipNotification friendshipNotification = new FriendshipNotification();
+            friendshipNotification.setIngoing(ingoing);
+            friendshipNotification.setOutgoing(outgoing);
+            friendshipNotificationService.saveNotification(friendshipNotification);
+        }
+        ingoing.getIngoing().add(outgoing);
         userService.saveUser(ingoing);
     }
 
     @PutMapping("/removeFriend")
     public void removeFriend(@RequestParam Long ingoingId, @RequestParam Long outgoingId) {
         User outgoing = userService.getUserById(outgoingId);
+        friendshipNotificationService.deleteNotification(ingoingId,outgoingId);
         outgoing.setOutgoing(outgoing.getOutgoing().stream().filter(user -> user.getUserId()!=ingoingId).collect(Collectors.toList()));
         userService.saveUser(outgoing);
     }
@@ -128,6 +140,16 @@ public class UsersController {
     @GetMapping("user/search")
     public List<UserDTO> search(@RequestParam String firstName, @RequestParam String lastName) {
         return UserDTO.getUserDTO(userService.search(firstName,lastName));
+    }
+
+    @GetMapping("user/countNotifications")
+    public Integer countNotifications(@RequestParam Long userId) {
+        return userService.getUserById(userId).getIngoingNotifications().size();
+    }
+
+    @DeleteMapping("user/cleanNotifications")
+    public void cleanNotifications(@RequestParam Long userId) {
+        friendshipNotificationService.deleteNotifications(userId);
     }
 
 }

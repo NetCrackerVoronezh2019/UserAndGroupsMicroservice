@@ -53,6 +53,32 @@ public class User {
     @JoinColumn(name = "roleId")
     private Role role;
 
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            mappedBy = "ingoing")
+    private List<FriendshipNotification> ingoingNotifications = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            mappedBy = "outgoing")
+    private List<FriendshipNotification> outgoingNotifications = new ArrayList<>();
+
+    public List<FriendshipNotification> getIngoingNotifications() {
+        return ingoingNotifications;
+    }
+
+    public void setIngoingNotifications(List<FriendshipNotification> ingoingNotifications) {
+        this.ingoingNotifications = ingoingNotifications;
+    }
+
+    public List<FriendshipNotification> getOutgoingNotifications() {
+        return outgoingNotifications;
+    }
+
+    public void setOutgoingNotifications(List<FriendshipNotification> outgoingNotifications) {
+        this.outgoingNotifications = outgoingNotifications;
+    }
+
     public List<Group> getGroupsAdmining() {
         return groupsAdmining;
     }
