@@ -9,18 +9,18 @@ public class PostImage {
     @Column(name = "imageId")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long imageId;
-    @Column(name = "imageURL")
-    private String imageURL;
+    @Column(name = "image")
+    private String image;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "postId")
     private Post post;
 
-    public String getImageURL() {
-        return imageURL;
+    public String getImage() {
+        return image;
     }
 
-    public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public Long getImageId() {

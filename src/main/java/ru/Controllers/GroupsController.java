@@ -3,6 +3,7 @@ package ru.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import ru.domen.Group;
 import ru.domen.Subject;
 import ru.domen.User;
+import ru.dto.AmazonModel;
 import ru.dto.GroupDTO;
 import ru.dto.UserDTO;
 import ru.services.GroupService;
@@ -44,18 +46,38 @@ public class GroupsController {
     }
 
     @PostMapping("/createGroup/")
-    public void createGroup(@RequestParam Long creatorId, @RequestParam String groupName, @RequestParam String subjectName) {
-        Group newGroup = new Group();
-        newGroup.setSubject(subjectService.getSubjectByTranslateName(subjectName));
-        newGroup.setName(groupName);
-        newGroup.setCreator(userService.getUserById(creatorId));
-        newGroup.getUsers().add(newGroup.getCreator());
-        newGroup.getAdmins().add(newGroup.getCreator());
+    public void createGroup(@RequestBody GroupDTO groupDTO) {
+        Group group = new Group();
+        group.setSubject(subjectService.getSubjectByTranslateName(groupDTO.getSubjectName()));
+        group.setName(groupDTO.getName());
+        group.setCreator(userService.getUserById(groupDTO.getCreatorId()));
+        group.getUsers().add(group.getCreator());
+        group.getAdmins().add(group.getCreator());
         RestTemplate restTemplate = new RestTemplate();
-        UriComponentsBuilder uriBuilder =UriComponentsBuilder.fromHttpUrl("http://localhost:8088/group/createDialog").queryParam("creatorId",creatorId).queryParam("name",groupName);
+        UriComponentsBuilder uriBuilder =UriComponentsBuilder.fromHttpUrl("http://localhost:8088/group/createDialog").queryParam("creatorId",groupDTO.getCreatorId()).queryParam("name",groupDTO.getName());
         ResponseEntity<Long> res = restTemplate.exchange(uriBuilder.build().encode().toUri(), HttpMethod.POST, null, new ParameterizedTypeReference<Long>() {});
-        newGroup.setDialogId(res.getBody());
-        groupService.saveGroup(newGroup);
+        group.setDialogId(res.getBody());
+        group = groupService.saveGroup(group);
+        String key = "group_"+group.getGroupId() + "avatar";
+        AmazonModel amazonModel = new AmazonModel(key,groupDTO.getImage());
+        HttpEntity<AmazonModel> amazonModelHttpEntity = new HttpEntity<>(amazonModel);
+        restTemplate.exchange("http://localhost:1234/groups/uploadFile",HttpMethod.POST,amazonModelHttpEntity,Object.class);
+        group.setImage(key);
+        groupService.saveGroup(group);
+    }
+
+
+    @PutMapping("group/setAvatar")
+    public void setAvatar(@RequestBody GroupDTO groupDTO) {
+        Group group = groupService.getGroupById(groupDTO.getGroupId());
+        if (group.getImage()== null) {
+            group.setImage("group_"+group.getGroupId() + "avatar");
+            groupService.saveGroup(group);
+        }
+        AmazonModel amazonModel = new AmazonModel(group.getImage(),groupDTO.getImage());
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity<AmazonModel> amazonModelHttpEntity = new HttpEntity<>(amazonModel);
+        restTemplate.exchange("http://localhost:1234/groups/uploadFile",HttpMethod.POST,amazonModelHttpEntity,Object.class);
     }
 
     @PostMapping("group/subscribe")

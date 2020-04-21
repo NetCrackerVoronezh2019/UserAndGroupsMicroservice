@@ -18,7 +18,7 @@ public class Post {
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
     @OneToMany(cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER,
+            fetch = FetchType.LAZY,
             mappedBy = "post")
     private List<PostImage> images = new ArrayList<>();
     @ManyToOne(fetch = FetchType.EAGER)

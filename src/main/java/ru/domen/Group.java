@@ -28,8 +28,8 @@ public class Group {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userId")
     private User creator;
-    @Column(name = "imageURL")
-    private String imageURL;
+    @Column(name = "image")
+    private String image;
     @Column(name = "description")
     private String description;
 
@@ -75,12 +75,12 @@ public class Group {
     }
 
 
-    public String getImageURL() {
-        return imageURL;
+    public String getImage() {
+        return image;
     }
 
-    public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public Long getGroupId() {

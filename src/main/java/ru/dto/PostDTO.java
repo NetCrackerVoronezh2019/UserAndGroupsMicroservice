@@ -1,7 +1,5 @@
 package ru.dto;
 
-import ru.domen.Comment;
-import ru.domen.Group;
 import ru.domen.Post;
 import ru.domen.PostImage;
 
@@ -24,7 +22,7 @@ public class PostDTO {
         postDTO.groupId = post.getGroup().getGroupId();
         for (PostImage postImage :
                 post.getImages()) {
-            postDTO.images.add(postImage.getImageURL());
+            postDTO.images.add(postImage.getImage());
         }
         return postDTO;
     }

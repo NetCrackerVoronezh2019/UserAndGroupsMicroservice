@@ -5,12 +5,12 @@ import ru.domen.PostImage;
 public class PostImageDTO {
     private Long imageId;
     private Long postId;
-    private String imageURL;
+    private String image;
 
     public static PostImageDTO getPostImage(PostImage postImage) {
         PostImageDTO postImageDTO = new PostImageDTO();
         postImageDTO.imageId = postImage.getImageId();
-        postImageDTO.imageURL = postImage.getImageURL();
+        postImageDTO.image = postImage.getImage();
         postImageDTO.postId = postImage.getPost().getPostId();
         return postImageDTO;
     }
@@ -31,11 +31,11 @@ public class PostImageDTO {
         this.postId = postId;
     }
 
-    public String getImageURL() {
-        return imageURL;
+    public String getImage() {
+        return image;
     }
 
-    public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
+    public void setImage(String image) {
+        this.image = image;
     }
 }

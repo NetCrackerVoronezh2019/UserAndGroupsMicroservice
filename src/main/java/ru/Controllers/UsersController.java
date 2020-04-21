@@ -8,9 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.domen.FriendshipNotification;
-import ru.domen.Group;
 import ru.domen.User;
-import ru.dto.GroupDTO;
 import ru.dto.UserDTO;
 import ru.services.FriendshipNotificationService;
 import ru.services.RoleService;
@@ -33,7 +31,7 @@ public class UsersController {
     @PostMapping("/createUser/")
     public void createUser(@RequestBody UserDTO userDTO) {
         User user = new User();
-        user.setImageURL(userDTO.getImageURL());
+        user.setImage(userDTO.getImage());
         user.setMiddleName(userDTO.getMiddleName());
         user.setLastName(userDTO.getLastName());
         user.setFirstName(userDTO.getFirstName());
@@ -42,6 +40,13 @@ public class UsersController {
         user.setBirthday(userDTO.getBirthday());
         user.setUserId(userDTO.getUserId());
         user.setRole(roleService.getRoleByName(userDTO.getRole()));
+        userService.saveUser(user);
+    }
+
+    @PutMapping("user/updateUserImage")
+    public void updeteAvatar(@RequestParam Long userId,@RequestParam String key) {
+        User user = userService.getUserById(userId);
+        user.setImage(key);
         userService.saveUser(user);
     }
 
@@ -59,7 +64,7 @@ public class UsersController {
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
         user.setMiddleName(userDTO.getMiddleName());
-        user.setImageURL(userDTO.getImageURL());
+        user.setImage(userDTO.getImage());
         userService.saveUser(user);
     }
 

@@ -14,7 +14,7 @@ public class UserDTO {
     private String lastName;
     private Date birthday;
     private String role;
-    private String imageURL;
+    private String image;
 
     public static UserDTO getUserDTO(User user){
         UserDTO userDTO = new UserDTO();
@@ -25,7 +25,7 @@ public class UserDTO {
         userDTO.middleName = user.getMiddleName();
         userDTO.lastName = user.getLastName();
         userDTO.role = user.getRole().getRoleName();
-        userDTO.imageURL = user.getImageURL();
+        userDTO.image = user.getImage();
         return userDTO;
     }
 
@@ -38,12 +38,12 @@ public class UserDTO {
         return userDTOS;
     }
 
-    public String getImageURL() {
-        return imageURL;
+    public String getImage() {
+        return image;
     }
 
-    public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public String getRole() {

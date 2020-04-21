@@ -13,8 +13,8 @@ public class GroupService {
     @Autowired
     private GroupRepository groupRepository;
 
-    public void saveGroup(Group user) {
-        groupRepository.save(user);
+    public Group saveGroup(Group group) {
+        return groupRepository.save(group);
     }
 
     public Group getGroupById(Long id) {

@@ -23,8 +23,8 @@ public class User {
     @Column(name="birthday")
     @Temporal(TemporalType.TIMESTAMP)
     private Date birthday;
-    @Column(name = "imageURL")
-    private String imageURL;
+    @Column(name = "image")
+    private String image;
     @ManyToMany(mappedBy = "users")
     private List<Group> groups = new ArrayList<>();
     @ManyToMany(mappedBy = "admins")
@@ -103,12 +103,12 @@ public class User {
         this.comments = comments;
     }
 
-    public String getImageURL() {
-        return imageURL;
+    public String getImage() {
+        return image;
     }
 
-    public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public List<User> getOutgoing() {

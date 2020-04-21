@@ -1,12 +1,14 @@
 package ru.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.*;
-import ru.domen.Comment;
+import org.springframework.web.client.RestTemplate;
 import ru.domen.Post;
 import ru.domen.PostImage;
+import ru.dto.AmazonModel;
 import ru.dto.PostDTO;
-import ru.dto.PostImageDTO;
 import ru.services.CommentService;
 import ru.services.GroupService;
 import ru.services.PostImageService;
@@ -36,13 +38,20 @@ public class PostController {
         post.setDate(new Date());
         post.setGroup(groupService.getGroupById(postDTO.getGroupId()));
         post.setText(postDTO.getText());
-        postService.savePost(post);
+        post = postService.savePost(post);
+        int i = 0;
         for (String image :
                 postDTO.getImages()) {
+            String key = "post_" + post.getPostId() + "image_" + i;
             PostImage postImage = new PostImage();
             postImage.setPost(post);
-            postImage.setImageURL(image);
+            postImage.setImage(key);
             postImageService.savePostImage(postImage);
+            AmazonModel amazonModel = new AmazonModel(key,image);
+            RestTemplate restTemplate = new RestTemplate();
+            HttpEntity<AmazonModel> amazonModelHttpEntity = new HttpEntity<>(amazonModel);
+            restTemplate.exchange("http://localhost:1234/groups/uploadFile", HttpMethod.POST,amazonModelHttpEntity,Object.class);
+            i++;
         }
     }
 
@@ -50,18 +59,6 @@ public class PostController {
     public void postSettings(@RequestBody PostDTO postDTO) {
         Post post = postService.getById(postDTO.getPostId());
         post.setText(postDTO.getText());
-        for (PostImage postImage :
-             post.getImages()) {
-            postImageService.deletePostImage(postImage);
-        }
-        post.setImages(new ArrayList<>());
-        for (String image :
-                postDTO.getImages()) {
-            PostImage postImage = new PostImage();
-            postImage.setPost(post);
-            postImage.setImageURL(image);
-            postImageService.savePostImage(postImage);
-        }
         postService.savePost(post);
     }
 
