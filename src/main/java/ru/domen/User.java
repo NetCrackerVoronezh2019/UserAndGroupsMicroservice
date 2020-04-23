@@ -27,6 +27,8 @@ public class User {
     private String image;
     @ManyToMany(mappedBy = "users")
     private List<Group> groups = new ArrayList<>();
+    @ManyToMany(mappedBy = "subscribers")
+    private List<Group> subscribtion = new ArrayList<>();
     @ManyToMany(mappedBy = "admins")
     private List<Group> groupsAdmining = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL,
@@ -62,6 +64,26 @@ public class User {
             fetch = FetchType.LAZY,
             mappedBy = "outgoing")
     private List<FriendshipNotification> outgoingNotifications = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            mappedBy = "user")
+    private List<GroupsNotification> notifications = new ArrayList<>();
+
+    public List<GroupsNotification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<GroupsNotification> notifications) {
+        this.notifications = notifications;
+    }
+
+    public List<Group> getSubscribtion() {
+        return subscribtion;
+    }
+
+    public void setSubscribtion(List<Group> subscribtion) {
+        this.subscribtion = subscribtion;
+    }
 
     public List<FriendshipNotification> getIngoingNotifications() {
         return ingoingNotifications;

@@ -21,6 +21,11 @@ public class Group {
                 inverseJoinColumns = @JoinColumn(name = "userId"))
     private List<User> users = new ArrayList<>();
     @ManyToMany
+    @JoinTable(name = "Users_notifications",
+            joinColumns = @JoinColumn(name = "groupId"),
+            inverseJoinColumns = @JoinColumn(name = "userId"))
+    private List<User> subscribers = new ArrayList<>();
+    @ManyToMany
     @JoinTable(name = "Admins_groups",
             joinColumns = @JoinColumn(name = "groupId"),
             inverseJoinColumns = @JoinColumn(name = "userId"))
@@ -32,6 +37,10 @@ public class Group {
     private String image;
     @Column(name = "description")
     private String description;
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            mappedBy = "group")
+    private List<GroupsNotification> notifications = new ArrayList<>();
 
     public List<User> getAdmins() {
         return admins;
@@ -49,6 +58,14 @@ public class Group {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "subjectId")
     private Subject subject;
+
+    public List<User> getSubscribers() {
+        return subscribers;
+    }
+
+    public void setSubscribers(List<User> subscribers) {
+        this.subscribers = subscribers;
+    }
 
     public String getDescription() {
         return description;

@@ -13,6 +13,8 @@ public class GroupDTO {
     private String subjectName;
     private String image;
     private String description;
+    private boolean isNotificationsOn;
+    private Long countNot;
 
     public static GroupDTO getGroupDTO(Group group) {
         GroupDTO groupDTO = new GroupDTO();
@@ -26,6 +28,21 @@ public class GroupDTO {
         return groupDTO;
     }
 
+    public Long getCountNot() {
+        return countNot;
+    }
+
+    public void setCountNot(Long countNot) {
+        this.countNot = countNot;
+    }
+
+    public boolean isNotificationsOn() {
+        return isNotificationsOn;
+    }
+
+    public void setNotificationsOn(boolean notificationsOn) {
+        isNotificationsOn = notificationsOn;
+    }
 
     public String getDescription() {
         return description;

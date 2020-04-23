@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.domen.Group;
+import ru.domen.GroupsNotification;
 import ru.domen.Subject;
 import ru.domen.User;
 import ru.dto.AmazonModel;
 import ru.dto.GroupDTO;
 import ru.dto.UserDTO;
+import ru.services.GroupNotificationService;
 import ru.services.GroupService;
 import ru.services.SubjectService;
 import ru.services.UserService;
@@ -33,6 +35,8 @@ public class GroupsController {
     private GroupService groupService;
     @Autowired
     private SubjectService subjectService;
+    @Autowired
+    private GroupNotificationService groupNotificationService;
 
     @PutMapping("/groupSettings")
     public void groupSettings(@RequestBody GroupDTO groupDTO) {
@@ -107,6 +111,7 @@ public class GroupsController {
         Group group = groupService.getGroupById(groupId);
         group.setUsers(group.getUsers().stream().filter(user -> user.getUserId() != userId).collect(Collectors.toList()));
         group.setAdmins(group.getAdmins().stream().filter(user -> user.getUserId() != userId).collect(Collectors.toList()));
+        group.setSubscribers(group.getSubscribers().stream().filter(user -> user.getUserId()!=userId).collect(Collectors.toList()));
         groupService.saveGroup(group);
         RestTemplate restTemplate = new RestTemplate();
         UriComponentsBuilder uriBuilder =UriComponentsBuilder.fromHttpUrl("http://localhost:8088/group/leaveDialog/").queryParam("userId",userId).queryParam("dialogId",group.getDialogId());
@@ -129,8 +134,34 @@ public class GroupsController {
 
     @GetMapping("groups/getUserGroups")
     public List<GroupDTO> getUserGroups(@RequestParam Long userId) {
-        List<Group> groups = userService.getUserById(userId).getGroups();
-        return GroupDTO.getGroupDTO(groups);
+        User user = userService.getUserById(userId);
+        List<Group> groups = user.getGroups();
+        List<GroupDTO> groupDTOS = GroupDTO.getGroupDTO(groups);
+        List<Long> notificationsOn = user.getSubscribtion().stream().map(Group::getGroupId).collect(Collectors.toList());
+        for (GroupDTO group :
+                groupDTOS) {
+            if (notificationsOn.contains(group.getGroupId())) {
+                group.setNotificationsOn(true);
+            } else {
+                group.setNotificationsOn(false);
+            }
+            group.setCountNot(user.getNotifications().stream().filter(groupsNotification -> groupsNotification.getGroup().getGroupId()==group.getGroupId()).count());
+        }
+        return groupDTOS;
+    }
+
+    @PutMapping("group/notificationOn")
+    public void groupNotificationOn(@RequestParam Long groupId,@RequestParam Long userId) {
+        Group group = groupService.getGroupById(groupId);
+        group.getSubscribers().add(userService.getUserById(userId));
+        groupService.saveGroup(group);
+    }
+
+    @PutMapping("group/notificationsOff")
+    public void groupNotificationsOff(@RequestParam Long groupId, @RequestParam Long userId) {
+        Group group = groupService.getGroupById(groupId);
+        group.setSubscribers(group.getSubscribers().stream().filter(user -> user.getUserId()!=userId).collect(Collectors.toList()));
+        groupService.saveGroup(group);
     }
 
     @GetMapping("groups/admins")
@@ -158,5 +189,15 @@ public class GroupsController {
         List<User> users = groupService.getGroupById(groupId).getUsers();
         users = users.stream().filter(user -> user.getFirstName().contains(firstName) && user.getLastName().contains(lastName)).collect(Collectors.toList());
         return UserDTO.getUserDTO(users);
+    }
+
+    @GetMapping("group/getNotificationsCount")
+    public Integer getNotificationsCount(@RequestParam Long userId) {
+        return userService.getUserById(userId).getNotifications().size();
+    }
+
+    @DeleteMapping("group/cleanNotifications")
+    public void cleanNotifications(@RequestParam Long userId,@RequestParam Long groupId) {
+        groupNotificationService.deleteNotifications(groupId,userId);
     }
 }

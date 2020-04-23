@@ -8,11 +8,9 @@ import org.springframework.web.client.RestTemplate;
 import ru.domen.Post;
 import ru.domen.PostImage;
 import ru.dto.AmazonModel;
+import ru.dto.GroupNotificationsDTO;
 import ru.dto.PostDTO;
-import ru.services.CommentService;
-import ru.services.GroupService;
-import ru.services.PostImageService;
-import ru.services.PostService;
+import ru.services.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -31,9 +29,11 @@ public class PostController {
     private PostImageService postImageService;
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private GroupNotificationService groupNotificationService;
 
     @PostMapping("groups/makePost")
-    public void makePost(@RequestBody PostDTO postDTO) {
+    public List<GroupNotificationsDTO> makePost(@RequestBody PostDTO postDTO) {
         Post post = new Post();
         post.setDate(new Date());
         post.setGroup(groupService.getGroupById(postDTO.getGroupId()));
@@ -53,6 +53,7 @@ public class PostController {
             restTemplate.exchange("http://localhost:1234/groups/uploadFile", HttpMethod.POST,amazonModelHttpEntity,Object.class);
             i++;
         }
+        return GroupNotificationsDTO.getGroupNotificationsDTO(groupNotificationService.createGroupNotifications(post));
     }
 
     @PutMapping("/postSettings")
