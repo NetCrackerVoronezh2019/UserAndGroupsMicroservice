@@ -62,12 +62,14 @@ public class GroupsController {
         ResponseEntity<Long> res = restTemplate.exchange(uriBuilder.build().encode().toUri(), HttpMethod.POST, null, new ParameterizedTypeReference<Long>() {});
         group.setDialogId(res.getBody());
         group = groupService.saveGroup(group);
-        String key = "group_"+group.getGroupId() + "avatar";
-        AmazonModel amazonModel = new AmazonModel(key,groupDTO.getImage());
-        HttpEntity<AmazonModel> amazonModelHttpEntity = new HttpEntity<>(amazonModel);
-        restTemplate.exchange("http://localhost:1234/groups/uploadFile",HttpMethod.POST,amazonModelHttpEntity,Object.class);
-        group.setImage(key);
-        groupService.saveGroup(group);
+        if (groupDTO.getImage()!=null) {
+            String key = "group_" + group.getGroupId() + "avatar";
+            AmazonModel amazonModel = new AmazonModel(key, groupDTO.getImage());
+            HttpEntity<AmazonModel> amazonModelHttpEntity = new HttpEntity<>(amazonModel);
+            restTemplate.exchange("http://localhost:1234/groups/uploadFile", HttpMethod.POST, amazonModelHttpEntity, Object.class);
+            group.setImage(key);
+            groupService.saveGroup(group);
+        }
     }
 
 
