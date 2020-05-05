@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 @Transactional
-public interface FriendshipNotificationRepository extends CrudRepository<FriendshipNotification,Long> {
+public interface FriendshipNotificationRepository extends CrudRepository<FriendshipNotification,Integer> {
     @Modifying
     @Query("DELETE from FriendshipNotification where ingoing.userId=:ingoingId and outgoing.userId=:outgoingId")
     public void deleteNotification(Long ingoingId,Long outgoingId);
@@ -19,5 +19,9 @@ public interface FriendshipNotificationRepository extends CrudRepository<Friends
     @Modifying
     @Query("DELETE from FriendshipNotification where ingoing.userId=:ingoingId")
     public void deleteNotifications(Long ingoingId);
+
+    @Modifying
+    @Query("DELETE from FriendshipNotification where notificationId=:notificationId")
+    public void deleteNotification(Integer notificationId);
 
 }

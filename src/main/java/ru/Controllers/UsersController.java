@@ -9,6 +9,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.domen.FriendshipNotification;
 import ru.domen.User;
+import ru.dto.FriendsNotificationDTO;
 import ru.dto.UserDTO;
 import ru.services.FriendshipNotificationService;
 import ru.services.RoleService;
@@ -129,6 +130,8 @@ public class UsersController {
             friendshipNotification.setIngoing(ingoing);
             friendshipNotification.setOutgoing(outgoing);
             friendshipNotificationService.saveNotification(friendshipNotification);
+        } else {
+            friendshipNotificationService.deleteNotification(outgoingId,ingoingId);
         }
         ingoing.getIngoing().add(outgoing);
         userService.saveUser(ingoing);
@@ -155,6 +158,16 @@ public class UsersController {
     @DeleteMapping("user/cleanNotifications")
     public void cleanNotifications(@RequestParam Long userId) {
         friendshipNotificationService.deleteNotifications(userId);
+    }
+
+    @GetMapping("getFriendshipNotifications")
+    public List<FriendsNotificationDTO> getFriendshipNotifications(@RequestParam Long userId) {
+        return FriendsNotificationDTO.getFriendNotificationDTO(userService.getUserById(userId).getIngoingNotifications());
+    }
+
+    @DeleteMapping("ignoreNotification")
+    public void ignoreNotefications(@RequestParam Integer notificationId) {
+        friendshipNotificationService.deleteNotification(notificationId);
     }
 
 }

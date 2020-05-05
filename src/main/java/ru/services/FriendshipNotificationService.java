@@ -14,6 +14,11 @@ public class FriendshipNotificationService {
         friendshipNotificationRepository.deleteNotification(ingoingId,outgoingId);
     }
 
+    public void deleteNotification(Integer notificationId) {
+        friendshipNotificationRepository.deleteNotification(notificationId);
+    }
+
+
     public void deleteNotifications(Long ingoingId) {
         friendshipNotificationRepository.deleteNotifications(ingoingId);
     }
