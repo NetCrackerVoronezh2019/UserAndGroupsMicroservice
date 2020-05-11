@@ -59,11 +59,15 @@ public class GroupsController {
         group.getAdmins().add(group.getCreator());
         RestTemplate restTemplate = new RestTemplate();
         UriComponentsBuilder uriBuilder =UriComponentsBuilder.fromHttpUrl("http://localhost:8088/group/createDialog").queryParam("creatorId",groupDTO.getCreatorId()).queryParam("name",groupDTO.getName());
+        group = groupService.saveGroup(group);
+        String key = "group_" + group.getGroupId() + "avatar";
+        if (groupDTO.getImage()!=null) {
+            uriBuilder.queryParam("image",key);
+        }
         ResponseEntity<Long> res = restTemplate.exchange(uriBuilder.build().encode().toUri(), HttpMethod.POST, null, new ParameterizedTypeReference<Long>() {});
         group.setDialogId(res.getBody());
         group = groupService.saveGroup(group);
         if (groupDTO.getImage()!=null) {
-            String key = "group_" + group.getGroupId() + "avatar";
             AmazonModel amazonModel = new AmazonModel(key, groupDTO.getImage());
             HttpEntity<AmazonModel> amazonModelHttpEntity = new HttpEntity<>(amazonModel);
             restTemplate.exchange("http://localhost:1234/groups/uploadFile", HttpMethod.POST, amazonModelHttpEntity, Object.class);
@@ -77,8 +81,12 @@ public class GroupsController {
     public void setAvatar(@RequestBody GroupDTO groupDTO) {
         Group group = groupService.getGroupById(groupDTO.getGroupId());
         if (group.getImage()== null) {
-            group.setImage("group_"+group.getGroupId() + "avatar");
+            String key = "group_"+group.getGroupId() + "avatar";
+            group.setImage(key);
             groupService.saveGroup(group);
+            RestTemplate restTemplate = new RestTemplate();
+            UriComponentsBuilder uriBuilder =UriComponentsBuilder.fromHttpUrl("http://localhost:8088/group/settings").queryParam("dialogId",group.getDialogId()).queryParam("groupName",group.getName()).queryParam("image",key);
+            restTemplate.exchange(uriBuilder.build().encode().toUri(), HttpMethod.PUT, null, Object.class);
         }
         AmazonModel amazonModel = new AmazonModel(group.getImage(),groupDTO.getImage());
         RestTemplate restTemplate = new RestTemplate();
@@ -140,12 +148,16 @@ public class GroupsController {
         List<Group> groups = user.getGroups();
         List<GroupDTO> groupDTOS = GroupDTO.getGroupDTO(groups);
         List<Long> notificationsOn = user.getSubscribtion().stream().map(Group::getGroupId).collect(Collectors.toList());
+        List<Long> admining = user.getGroupsAdmining().stream().map(Group::getGroupId).collect(Collectors.toList());
         for (GroupDTO group :
                 groupDTOS) {
             if (notificationsOn.contains(group.getGroupId())) {
                 group.setNotificationsOn(true);
             } else {
                 group.setNotificationsOn(false);
+            }
+            if (admining.contains(group.getGroupId())) {
+                group.setAdmin(true);
             }
             group.setCountNot(user.getNotifications().stream().filter(groupsNotification -> groupsNotification.getGroup().getGroupId()==group.getGroupId()).count());
         }

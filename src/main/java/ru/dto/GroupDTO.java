@@ -15,6 +15,7 @@ public class GroupDTO {
     private String description;
     private boolean isNotificationsOn;
     private Long countNot;
+    private boolean admin;
 
     public static GroupDTO getGroupDTO(Group group) {
         GroupDTO groupDTO = new GroupDTO();
@@ -26,6 +27,14 @@ public class GroupDTO {
         groupDTO.subjectName = group.getSubject().getName();
         groupDTO.description = group.getDescription();
         return groupDTO;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
     }
 
     public Long getCountNot() {
