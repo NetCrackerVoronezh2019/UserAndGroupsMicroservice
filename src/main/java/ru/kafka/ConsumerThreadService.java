@@ -53,11 +53,7 @@ public class ConsumerThreadService {
 	public void init()
 	{
 		try {
-<<<<<<< .mine
-		String bootstrapServers1="192.168.99.100:9092";
-=======
-		String bootstrapServers1="192.168.99.103:9092";
->>>>>>> .theirs
+		String bootstrapServers1="192.168.99.100:9092";s
     	Properties properties1=new Properties();
     	properties1.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,bootstrapServers1);
     	properties1.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());
@@ -120,7 +116,7 @@ public class ConsumerThreadService {
                 		if(records.count()>0)
                 		{
                 			RestTemplate template=new RestTemplate();
-                			ResponseEntity<List<String>> res=template.exchange("http://localhost:7082/getAllSubjects",HttpMethod.GET,null,new ParameterizedTypeReference<List<String>>(){});
+                			ResponseEntity<List<String>> res=template.exchange("http://192.168.99.103:7082/getAllSubjects",HttpMethod.GET,null,new ParameterizedTypeReference<List<String>>(){});
 
                 			subjectService.addNewSubjects(res.getBody());
                 		}                		
