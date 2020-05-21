@@ -16,6 +16,7 @@ import ru.domen.User;
 import ru.dto.AmazonModel;
 import ru.dto.GroupDTO;
 import ru.dto.UserDTO;
+import ru.kafka.Microservices;
 import ru.services.GroupNotificationService;
 import ru.services.GroupService;
 import ru.services.SubjectService;
@@ -26,7 +27,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:9080")
 public class GroupsController {
 
     @Autowired
@@ -38,6 +38,9 @@ public class GroupsController {
     @Autowired
     private GroupNotificationService groupNotificationService;
 
+    @Autowired
+    private Microservices microservices;
+
     @PutMapping("/groupSettings")
     public void groupSettings(@RequestBody GroupDTO groupDTO) {
         Group group = groupService.getGroupById(groupDTO.getGroupId());
@@ -45,7 +48,7 @@ public class GroupsController {
         group.setSubject(subjectService.getSubjectByTranslateName(groupDTO.getSubjectName()));
         groupService.saveGroup(group);
         RestTemplate restTemplate = new RestTemplate();
-        UriComponentsBuilder uriBuilder =UriComponentsBuilder.fromHttpUrl("http://localhost:8088/group/settings").queryParam("dialogId",group.getDialogId()).queryParam("groupName",group.getName());
+        UriComponentsBuilder uriBuilder =UriComponentsBuilder.fromHttpUrl("http://192.168.99.103:" + microservices.getConversationPort() + "/group/settings").queryParam("dialogId",group.getDialogId()).queryParam("groupName",group.getName());
         restTemplate.exchange(uriBuilder.build().encode().toUri(), HttpMethod.PUT, null, Object.class);
     }
 
@@ -58,7 +61,7 @@ public class GroupsController {
         group.getUsers().add(group.getCreator());
         group.getAdmins().add(group.getCreator());
         RestTemplate restTemplate = new RestTemplate();
-        UriComponentsBuilder uriBuilder =UriComponentsBuilder.fromHttpUrl("http://localhost:8088/group/createDialog").queryParam("creatorId",groupDTO.getCreatorId()).queryParam("name",groupDTO.getName());
+        UriComponentsBuilder uriBuilder =UriComponentsBuilder.fromHttpUrl("http://192.168.99.103:" + microservices.getConversationPort() + "group/createDialog").queryParam("creatorId",groupDTO.getCreatorId()).queryParam("name",groupDTO.getName());
         group = groupService.saveGroup(group);
         String key = "group_" + group.getGroupId() + "avatar";
         if (groupDTO.getImage()!=null) {
@@ -70,7 +73,7 @@ public class GroupsController {
         if (groupDTO.getImage()!=null) {
             AmazonModel amazonModel = new AmazonModel(key, groupDTO.getImage());
             HttpEntity<AmazonModel> amazonModelHttpEntity = new HttpEntity<>(amazonModel);
-            restTemplate.exchange("http://localhost:1234/groups/uploadFile", HttpMethod.POST, amazonModelHttpEntity, Object.class);
+            restTemplate.exchange("http://192.168.99.103:" + microservices.getAmazonPort() + "/groups/uploadFile", HttpMethod.POST, amazonModelHttpEntity, Object.class);
             group.setImage(key);
             groupService.saveGroup(group);
         }
@@ -85,13 +88,13 @@ public class GroupsController {
             group.setImage(key);
             groupService.saveGroup(group);
             RestTemplate restTemplate = new RestTemplate();
-            UriComponentsBuilder uriBuilder =UriComponentsBuilder.fromHttpUrl("http://localhost:8088/group/settings").queryParam("dialogId",group.getDialogId()).queryParam("groupName",group.getName()).queryParam("image",key);
+            UriComponentsBuilder uriBuilder =UriComponentsBuilder.fromHttpUrl("http://192.168.99.103:" + microservices.getConversationPort() + "/group/settings").queryParam("dialogId",group.getDialogId()).queryParam("groupName",group.getName()).queryParam("image",key);
             restTemplate.exchange(uriBuilder.build().encode().toUri(), HttpMethod.PUT, null, Object.class);
         }
         AmazonModel amazonModel = new AmazonModel(group.getImage(),groupDTO.getImage());
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<AmazonModel> amazonModelHttpEntity = new HttpEntity<>(amazonModel);
-        restTemplate.exchange("http://localhost:1234/groups/uploadFile",HttpMethod.POST,amazonModelHttpEntity,Object.class);
+        restTemplate.exchange("http://192.168.99.103:" + microservices.getAmazonPort() + "/groups/uploadFile",HttpMethod.POST,amazonModelHttpEntity,Object.class);
     }
 
     @PostMapping("group/subscribe")
@@ -104,7 +107,7 @@ public class GroupsController {
         }
         groupService.saveGroup(group);
         RestTemplate restTemplate = new RestTemplate();
-        UriComponentsBuilder uriBuilder =UriComponentsBuilder.fromHttpUrl("http://localhost:8088/group/subscribeDialog").queryParam("userId",userId).queryParam("dialogId",group.getDialogId());
+        UriComponentsBuilder uriBuilder =UriComponentsBuilder.fromHttpUrl("http://192.168.99.103:" + microservices.getConversationPort() + "/group/subscribeDialog").queryParam("userId",userId).queryParam("dialogId",group.getDialogId());
         restTemplate.exchange(uriBuilder.build().encode().toUri(), HttpMethod.POST, null, Object.class);
     }
 
@@ -124,7 +127,7 @@ public class GroupsController {
         group.setSubscribers(group.getSubscribers().stream().filter(user -> user.getUserId()!=userId).collect(Collectors.toList()));
         groupService.saveGroup(group);
         RestTemplate restTemplate = new RestTemplate();
-        UriComponentsBuilder uriBuilder =UriComponentsBuilder.fromHttpUrl("http://localhost:8088/group/leaveDialog/").queryParam("userId",userId).queryParam("dialogId",group.getDialogId());
+        UriComponentsBuilder uriBuilder =UriComponentsBuilder.fromHttpUrl("http://192.168.99.103:" + microservices.getConversationPort() + "/group/leaveDialog/").queryParam("userId",userId).queryParam("dialogId",group.getDialogId());
         restTemplate.exchange(uriBuilder.build().encode().toUri(), HttpMethod.DELETE   , null, Object.class);
     }
 

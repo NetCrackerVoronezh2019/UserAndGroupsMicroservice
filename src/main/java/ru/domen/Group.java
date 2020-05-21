@@ -59,6 +59,14 @@ public class Group {
     @JoinColumn(name = "subjectId")
     private Subject subject;
 
+    public List<GroupsNotification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<GroupsNotification> notifications) {
+        this.notifications = notifications;
+    }
+
     public List<User> getSubscribers() {
         return subscribers;
     }
