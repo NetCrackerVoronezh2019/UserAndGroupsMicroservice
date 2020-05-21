@@ -13,7 +13,6 @@ public class UserDTO {
     private String middleName;
     private String lastName;
     private Date birthday;
-    private String role;
     private String image;
 
     public static UserDTO getUserDTO(User user){
@@ -24,7 +23,6 @@ public class UserDTO {
         userDTO.firstName = user.getFirstName();
         userDTO.middleName = user.getMiddleName();
         userDTO.lastName = user.getLastName();
-        userDTO.role = user.getRole().getRoleName();
         userDTO.image = user.getImage();
         return userDTO;
     }
@@ -44,14 +42,6 @@ public class UserDTO {
 
     public void setImage(String image) {
         this.image = image;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
     }
 
     public Long getUserId() {

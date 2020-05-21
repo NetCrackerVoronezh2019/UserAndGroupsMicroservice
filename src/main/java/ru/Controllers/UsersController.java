@@ -40,7 +40,6 @@ public class UsersController {
         user.setEmail(userDTO.getEmail());
         user.setBirthday(userDTO.getBirthday());
         user.setUserId(userDTO.getUserId());
-        user.setRole(roleService.getRoleByName(userDTO.getRole()));
         userService.saveUser(user);
     }
 
@@ -73,7 +72,7 @@ public class UsersController {
     @PostMapping("startDialogWithUser")
     public Long startDialog(@RequestParam Long userId, @RequestParam Long creatorId) {
         RestTemplate restTemplate = new RestTemplate();
-        UriComponentsBuilder uriBuilder =UriComponentsBuilder.fromHttpUrl("http://localhost:8088/user/createDialog").queryParam("userId",userId).queryParam("creatorId",creatorId);
+        UriComponentsBuilder uriBuilder =UriComponentsBuilder.fromHttpUrl("http://192.168.99.103:8088/user/createDialog").queryParam("userId",userId).queryParam("creatorId",creatorId);
         ResponseEntity<Long> res = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.POST, null,  new ParameterizedTypeReference<Long>() {});
         return res.getBody();
     }

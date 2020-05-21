@@ -10,6 +10,7 @@ import ru.domen.PostImage;
 import ru.dto.AmazonModel;
 import ru.dto.GroupNotificationsDTO;
 import ru.dto.PostDTO;
+import ru.kafka.Microservices;
 import ru.services.*;
 
 import java.util.ArrayList;
@@ -19,7 +20,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:9080")
 public class PostController {
     @Autowired
     private GroupService groupService;
@@ -31,6 +31,8 @@ public class PostController {
     private CommentService commentService;
     @Autowired
     private GroupNotificationService groupNotificationService;
+    @Autowired
+    private Microservices microservices;
 
     @PostMapping("groups/makePost")
     public List<GroupNotificationsDTO> makePost(@RequestBody PostDTO postDTO) {
@@ -50,7 +52,7 @@ public class PostController {
             AmazonModel amazonModel = new AmazonModel(key,image);
             RestTemplate restTemplate = new RestTemplate();
             HttpEntity<AmazonModel> amazonModelHttpEntity = new HttpEntity<>(amazonModel);
-            restTemplate.exchange("http://localhost:1234/groups/uploadFile", HttpMethod.POST,amazonModelHttpEntity,Object.class);
+            restTemplate.exchange("http://192.168.99.103:" + microservices.getAmazonPort() + "/groups/uploadFile", HttpMethod.POST,amazonModelHttpEntity,Object.class);
             i++;
         }
         return GroupNotificationsDTO.getGroupNotificationsDTO(groupNotificationService.createGroupNotifications(post));

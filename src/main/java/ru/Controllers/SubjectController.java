@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:9080")
 public class SubjectController {
     @Autowired
     private SubjectService subjectService;

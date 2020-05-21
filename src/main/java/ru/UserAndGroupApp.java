@@ -14,7 +14,7 @@ public class UserAndGroupApp {
 		try {
 				ConsumerThreadService threadService = (ConsumerThreadService) app.getBean("consumerThreadService");		
 				Utility utility=(Utility) app.getBean("utility");	
-			    utility.sendInfoModelToConfig("http://localhost:7082/setInfoModel");
+			    utility.sendInfoModelToConfig("http://192.168.99.103:7082/setInfoModel");
 			    Thread microserviceInfoThread =new Thread(threadService.microserviceInfoRunnable());
 			    microserviceInfoThread.start();
 			    Thread subjectThread =new Thread(threadService.subjectRunnable());
