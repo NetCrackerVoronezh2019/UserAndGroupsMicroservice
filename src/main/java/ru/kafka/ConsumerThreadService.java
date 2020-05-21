@@ -20,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import ru.services.SubjectService;
+
 @Service
 public class ConsumerThreadService {
 
@@ -28,18 +30,30 @@ public class ConsumerThreadService {
 	private Microservices micro;
 	
 	private KafkaConsumer<String,String> microserviceInfoConsumer;
+	
+	private KafkaConsumer<String,String> subjectConsumer;
 
+	@Autowired
+	private SubjectService subjectService;
 	@Value("${kafka.microserviceInfoTopic}")
 	private String microserviceInfoTopic;
 	
 	@Value("${kafka.microservcieInfoGroup}")
 	private String microserviceInfoGroup;
 	
+	@Value("${kafka.subjectsTopic}")
+	private String subjectsTopic;
+	
+	@Value("${kafka.subjectsTopicGroup}")
+	private String subjectsTopicGroup;
+	
+	
+	
 	@PostConstruct
 	public void init()
 	{
 		try {
-		String bootstrapServers1="localhost:9092";
+		String bootstrapServers1="192.168.99.100:9092";
     	Properties properties1=new Properties();
     	properties1.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,bootstrapServers1);
     	properties1.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());
@@ -48,6 +62,15 @@ public class ConsumerThreadService {
     	properties1.setProperty(ConsumerConfig.GROUP_ID_CONFIG, this.microserviceInfoTopic);
     	this.microserviceInfoConsumer=new KafkaConsumer<String,String>(properties1);
     	this.microserviceInfoConsumer.subscribe(Arrays.asList(this.microserviceInfoGroup));
+    	
+    	Properties properties2=new Properties();
+    	properties2.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,bootstrapServers1);
+    	properties2.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());
+    	properties2.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());
+    	properties2.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"earliest");
+    	properties2.setProperty(ConsumerConfig.GROUP_ID_CONFIG, this.subjectsTopicGroup);
+    	this.subjectConsumer=new KafkaConsumer<String,String>(properties2);
+    	this.subjectConsumer.subscribe(Arrays.asList(this.subjectsTopic));
     	
 		}
 		catch(Exception ex) {}
@@ -71,15 +94,48 @@ public class ConsumerThreadService {
         		catch(WakeupException e)
         		{
         			System.out.println(e.getMessage()+" ------WakeupException");
-        		}
-        		finally
-        		{
         			System.out.println("UNSUBSCRIBE");
         			microserviceInfoConsumer.unsubscribe();
         			microserviceInfoConsumer.close();
+        		}
+        		
+            }
+        };
+	}
+	
+
+	public Runnable subjectRunnable()
+	{
+		return new Runnable() {
+
+            public void run() {
+            	try {	
+            		while(true)
+                	{
+                		ConsumerRecords<String,String> records=subjectConsumer.poll(Duration.ofMillis(100));
+                		if(records.count()>0)
+                		{
+                			RestTemplate template=new RestTemplate();
+                			ResponseEntity<List<String>> res=template.exchange("http://localhost:7082/getAllSubjects",HttpMethod.GET,null,new ParameterizedTypeReference<List<String>>(){});
+
+                			subjectService.addNewSubjects(res.getBody());
+                		}                		
+                	}
+        		}
+        		
+        		catch(Exception e)
+        		{
+        			System.out.println(e.getMessage());
+        			subjectConsumer.unsubscribe();
+        			subjectConsumer.close();
+        		}
+        		finally
+        		{
+        			
         			
         		}
             }
         };
 	}
+	
 }

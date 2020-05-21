@@ -17,6 +17,8 @@ public class UserAndGroupApp {
 			    utility.sendInfoModelToConfig("http://localhost:7082/setInfoModel");
 			    Thread microserviceInfoThread =new Thread(threadService.microserviceInfoRunnable());
 			    microserviceInfoThread.start();
+			    Thread subjectThread =new Thread(threadService.subjectRunnable());
+			    subjectThread.start();	
 			}
 		catch(Exception ex)
 		{
