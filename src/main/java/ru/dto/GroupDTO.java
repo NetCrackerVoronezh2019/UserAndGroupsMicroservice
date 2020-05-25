@@ -24,7 +24,7 @@ public class GroupDTO {
         groupDTO.name = group.getName();
         groupDTO.creatorId = group.getCreator().getUserId();
         groupDTO.image = group.getImage();
-        groupDTO.subjectName = group.getSubject().getName();
+        groupDTO.subjectName = group.getSubject().getTranslateName();
         groupDTO.description = group.getDescription();
         return groupDTO;
     }

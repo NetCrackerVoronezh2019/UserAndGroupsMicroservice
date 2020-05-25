@@ -137,12 +137,22 @@ public class GroupsController {
     }
 
     @GetMapping("group/search")
-    public List<GroupDTO> search(@RequestParam String name, @RequestParam String subjectName) {
+    public List<GroupDTO> search(@RequestParam String name, @RequestParam String subjectName, @RequestParam Long userId) {
         List<Group> groups = groupService.search(name);
+        User user = userService.getUserById(userId);
         if (subjectName != "") {
             groups = groups.stream().filter(group -> group.getSubject().getTranslateName().equals(subjectName)).collect(Collectors.toList());
         }
-        return GroupDTO.getGroupDTO(groups);
+        List<GroupDTO> groupDTOS = GroupDTO.getGroupDTO(groups);
+        List<Long> admining = user.getGroupsAdmining().stream().map(Group::getGroupId).collect(Collectors.toList());
+        for (GroupDTO group :
+                groupDTOS) {
+            if (admining.contains(group.getGroupId())) {
+                group.setAdmin(true);
+            }
+            group.setCountNot(user.getNotifications().stream().filter(groupsNotification -> groupsNotification.getGroup().getGroupId()==group.getGroupId()).count());
+        }
+        return groupDTOS;
     }
 
     @GetMapping("groups/getUserGroups")

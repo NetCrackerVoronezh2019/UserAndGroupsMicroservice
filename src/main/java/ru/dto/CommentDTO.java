@@ -4,6 +4,7 @@ import ru.domen.Comment;
 import ru.domen.Post;
 import ru.domen.User;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 
@@ -12,7 +13,7 @@ public class CommentDTO {
     private String text;
     private Long postId;
     private UserDTO sender;
-    private Date date;
+    private LocalDateTime date;
 
     public static CommentDTO getCommentDTO(Comment comment) {
         CommentDTO commentDTO = new CommentDTO();
@@ -56,11 +57,11 @@ public class CommentDTO {
         this.sender = sender;
     }
 
-    public Date getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 }

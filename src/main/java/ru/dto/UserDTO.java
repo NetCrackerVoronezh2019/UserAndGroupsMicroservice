@@ -2,6 +2,7 @@ package ru.dto;
 
 import ru.domen.User;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,7 +13,7 @@ public class UserDTO {
     private String firstName;
     private String middleName;
     private String lastName;
-    private Date birthday;
+    private LocalDateTime birthday;
     private String image;
 
     public static UserDTO getUserDTO(User user){
@@ -84,11 +85,11 @@ public class UserDTO {
         this.lastName = lastName;
     }
 
-    public Date getBirthday() {
+    public LocalDateTime getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(Date birthday) {
+    public void setBirthday(LocalDateTime birthday) {
         this.birthday = birthday;
     }
 }

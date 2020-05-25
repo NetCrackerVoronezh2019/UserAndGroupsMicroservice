@@ -53,7 +53,7 @@ public class ConsumerThreadService {
 	public void init()
 	{
 		try {
-		String bootstrapServers1="192.168.99.100:9092";s
+		String bootstrapServers1="192.168.99.103:9092";
     	Properties properties1=new Properties();
     	properties1.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,bootstrapServers1);
     	properties1.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());

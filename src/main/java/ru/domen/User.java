@@ -1,6 +1,12 @@
 package ru.domen;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -21,8 +27,9 @@ public class User {
     @Column(name = "lastName")
     private String lastName;
     @Column(name="birthday")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date birthday;
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    private LocalDateTime birthday;
     @Column(name = "image")
     private String image;
     @ManyToMany(mappedBy = "users")
@@ -185,11 +192,11 @@ public class User {
         this.lastName = lastName;
     }
 
-    public Date getBirthday() {
+    public LocalDateTime getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(Date birthday) {
+    public void setBirthday(LocalDateTime birthday) {
         this.birthday = birthday;
     }
 

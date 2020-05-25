@@ -13,6 +13,7 @@ import ru.dto.PostDTO;
 import ru.kafka.Microservices;
 import ru.services.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -37,7 +38,7 @@ public class PostController {
     @PostMapping("groups/makePost")
     public List<GroupNotificationsDTO> makePost(@RequestBody PostDTO postDTO) {
         Post post = new Post();
-        post.setDate(new Date());
+        post.setDate(LocalDateTime.now().plusHours(3));
         post.setGroup(groupService.getGroupById(postDTO.getGroupId()));
         post.setText(postDTO.getText());
         post = postService.savePost(post);

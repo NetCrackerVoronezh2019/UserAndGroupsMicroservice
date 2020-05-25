@@ -8,6 +8,7 @@ import ru.services.CommentService;
 import ru.services.PostService;
 import ru.services.UserService;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -26,7 +27,7 @@ public class CommentController {
     @PostMapping("/SendComment")
     public void sendComment(@RequestBody CommentDTO commentDTO) {
         Comment comment = new Comment();
-        comment.setDate(new Date());
+        comment.setDate(LocalDateTime.now().plusHours(3));
         comment.setPost(postService.getById(commentDTO.getPostId()));
         comment.setSender(userService.getUserById(commentDTO.getSender().getUserId()));
         comment.setText(commentDTO.getText());
